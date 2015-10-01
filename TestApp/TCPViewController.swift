@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  TCPViewController.swift
 //  TestApp
 //
 //  Created by Jonathan Wight on 8/8/15.
@@ -34,7 +34,7 @@ import Cocoa
 import SwiftIO
 import SwiftUtilities
 
-class ViewController: NSViewController {
+class TCPViewController: NSViewController {
 
     var channel: TCPChannel!
     var task: NSTask?
@@ -50,7 +50,7 @@ class ViewController: NSViewController {
 //        task = NSTask.launchedTaskWithLaunchPath("/usr/local/bin/socat", arguments: ["TCP4-LISTEN:12345,reuseaddr", "exec:'tr a-z A-Z',pty,raw,echo=0"])
 //        sleep(1)
 
-        channel = try! TCPChannel(hostname: "localhost", port: 12345)
+        channel = try! TCPChannel(hostname: "schwa.io", port: 12345)
 
         channel.serverDisconnectedCallback = {
             assert(self.channel.state == .Unconnected)
@@ -78,26 +78,26 @@ class ViewController: NSViewController {
             }
         }
 
-        channel.connect() {
-            (result) in
-
-            Async.main() {
-                self.updateConnected()
-            }
-
-            if let error = result.error {
-                assert(self.channel.state == .Unconnected)
-                print("Connection failure: \(error)")
-                return
-            }
-
-            let data = "Hello world".dataUsingEncoding(NSUTF8StringEncoding)!
-            let dispatchData = DispatchData <Void> (start: data.bytes, count: data.length)
-            self.channel!.write(dispatchData) {
-                (result) in
-                print("Write: ", result)
-            }
-        }
+//        channel.connect() {
+//            (result) in
+//
+//            Async.main() {
+//                self.updateConnected()
+//            }
+//
+//            if let error = result.error {
+//                assert(self.channel.state == .Unconnected)
+//                print("Connection failure: \(error)")
+//                return
+//            }
+//
+//            let data = "Hello world".dataUsingEncoding(NSUTF8StringEncoding)!
+//            let dispatchData = DispatchData <Void> (start: data.bytes, count: data.length)
+//            self.channel!.write(dispatchData) {
+//                (result) in
+//                print("Write: ", result)
+//            }
+//        }
     }
 
     @IBAction func connect(sender:AnyObject?) {

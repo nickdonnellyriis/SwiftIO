@@ -30,6 +30,9 @@
 		452E96EF1B3C9EC6002269CD /* BinaryDecoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452E96ED1B3C9EC6002269CD /* BinaryDecoding.swift */; };
 		452E96F11B3CA0E2002269CD /* BinaryOutputStreams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452E96F01B3CA0E2002269CD /* BinaryOutputStreams.swift */; };
 		452E96F21B3CA0E2002269CD /* BinaryOutputStreams.swift in Sources */ = {isa = PBXBuildFile; fileRef = 452E96F01B3CA0E2002269CD /* BinaryOutputStreams.swift */; };
+		455667C51BBCE62300A1411D /* MemoryPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455667C41BBCE62300A1411D /* MemoryPool.swift */; settings = {ASSET_TAGS = (); }; };
+		455667C61BBCE62300A1411D /* MemoryPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455667C41BBCE62300A1411D /* MemoryPool.swift */; settings = {ASSET_TAGS = (); }; };
+		455667C91BBCE8CD00A1411D /* UDPViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 455667C71BBCE8CD00A1411D /* UDPViewController.swift */; settings = {ASSET_TAGS = (); }; };
 		4578F9121BB2177A00C90DA6 /* TLVStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4578F9111BB2177A00C90DA6 /* TLVStream.swift */; settings = {ASSET_TAGS = (); }; };
 		4578F9131BB2177A00C90DA6 /* TLVStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4578F9111BB2177A00C90DA6 /* TLVStream.swift */; settings = {ASSET_TAGS = (); }; };
 		4578F9181BB2289F00C90DA6 /* NullStream.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4578F9171BB2289F00C90DA6 /* NullStream.swift */; settings = {ASSET_TAGS = (); }; };
@@ -60,7 +63,7 @@
 		45DD2DA51B7670490002994A /* Inet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DD2DA31B76700B0002994A /* Inet.swift */; };
 		45DD2DA61B76704E0002994A /* Address.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DD2DA11B766FC70002994A /* Address.swift */; };
 		45DD2DAE1B76AD850002994A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DD2DAD1B76AD850002994A /* AppDelegate.swift */; };
-		45DD2DB01B76AD850002994A /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DD2DAF1B76AD850002994A /* ViewController.swift */; };
+		45DD2DB01B76AD850002994A /* TCPViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45DD2DAF1B76AD850002994A /* TCPViewController.swift */; };
 		45DD2DB21B76AD850002994A /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45DD2DB11B76AD850002994A /* Assets.xcassets */; };
 		45DD2DB51B76AD850002994A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 45DD2DB31B76AD850002994A /* Main.storyboard */; };
 		45DD2DBA1B76AD960002994A /* SwiftIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45DEC6AB1B0E8FEE00B7C234 /* SwiftIO.framework */; };
@@ -141,6 +144,8 @@
 		452E96E51B3C8F1B002269CD /* BinaryInputStreams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinaryInputStreams.swift; sourceTree = "<group>"; };
 		452E96ED1B3C9EC6002269CD /* BinaryDecoding.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinaryDecoding.swift; sourceTree = "<group>"; };
 		452E96F01B3CA0E2002269CD /* BinaryOutputStreams.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BinaryOutputStreams.swift; sourceTree = "<group>"; };
+		455667C41BBCE62300A1411D /* MemoryPool.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MemoryPool.swift; sourceTree = "<group>"; };
+		455667C71BBCE8CD00A1411D /* UDPViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UDPViewController.swift; sourceTree = "<group>"; };
 		4578F9111BB2177A00C90DA6 /* TLVStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TLVStream.swift; sourceTree = "<group>"; };
 		4578F9171BB2289F00C90DA6 /* NullStream.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NullStream.swift; sourceTree = "<group>"; };
 		457E99671BB9C88D00466389 /* SwiftIOSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SwiftIOSupport.m; sourceTree = "<group>"; };
@@ -159,7 +164,7 @@
 		45DD2DA31B76700B0002994A /* Inet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Inet.swift; sourceTree = "<group>"; };
 		45DD2DAB1B76AD850002994A /* TestApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		45DD2DAD1B76AD850002994A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		45DD2DAF1B76AD850002994A /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		45DD2DAF1B76AD850002994A /* TCPViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TCPViewController.swift; sourceTree = "<group>"; };
 		45DD2DB11B76AD850002994A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		45DD2DB41B76AD850002994A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		45DD2DB61B76AD850002994A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -258,7 +263,8 @@
 			isa = PBXGroup;
 			children = (
 				45DD2DAD1B76AD850002994A /* AppDelegate.swift */,
-				45DD2DAF1B76AD850002994A /* ViewController.swift */,
+				45DD2DAF1B76AD850002994A /* TCPViewController.swift */,
+				455667C71BBCE8CD00A1411D /* UDPViewController.swift */,
 				45DD2DB11B76AD850002994A /* Assets.xcassets */,
 				45DD2DB31B76AD850002994A /* Main.storyboard */,
 				45DD2DB61B76AD850002994A /* Info.plist */,
@@ -311,6 +317,7 @@
 				457E996A1BB9C89600466389 /* SwiftIOSupport.h */,
 				457E99671BB9C88D00466389 /* SwiftIOSupport.m */,
 				45B822161BBB39530060E57D /* Logging.swift */,
+				455667C41BBCE62300A1411D /* MemoryPool.swift */,
 				45E240091B0E8A700001F5B9 /* Supporting Files */,
 				4513AE601B7531E700BAA209 /* Carthage */,
 			);
@@ -519,8 +526,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				45DD2DB01B76AD850002994A /* ViewController.swift in Sources */,
+				45DD2DB01B76AD850002994A /* TCPViewController.swift in Sources */,
 				45DD2DAE1B76AD850002994A /* AppDelegate.swift in Sources */,
+				455667C91BBCE8CD00A1411D /* UDPViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -543,6 +551,7 @@
 				4578F9131BB2177A00C90DA6 /* TLVStream.swift in Sources */,
 				452C74911BBB7CE7005A46FB /* TCPChannel.swift in Sources */,
 				4596D3D21B7A8496009318E6 /* RandomAccess.swift in Sources */,
+				455667C61BBCE62300A1411D /* MemoryPool.swift in Sources */,
 				4593210B1B83AEF400105005 /* Datagram+Streams.swift in Sources */,
 				4594104D1B794E0C007FFBA0 /* NetworkEndian.swift in Sources */,
 				457E99691BB9C88D00466389 /* SwiftIOSupport.m in Sources */,
@@ -568,6 +577,7 @@
 				4578F9121BB2177A00C90DA6 /* TLVStream.swift in Sources */,
 				452C74901BBB7CE7005A46FB /* TCPChannel.swift in Sources */,
 				4596D3D11B7A8496009318E6 /* RandomAccess.swift in Sources */,
+				455667C51BBCE62300A1411D /* MemoryPool.swift in Sources */,
 				4593210A1B83AEF400105005 /* Datagram+Streams.swift in Sources */,
 				4594104C1B794E0C007FFBA0 /* NetworkEndian.swift in Sources */,
 				457E99681BB9C88D00466389 /* SwiftIOSupport.m in Sources */,

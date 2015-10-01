@@ -50,6 +50,8 @@ public class UDPChannel {
     private var source: dispatch_source_t!
     private var socket: Int32!
 
+    public let memoryPool = MemoryPool(length: 2096)
+
     public init(address: Address, port: UInt16, readHandler: (Datagram -> Void)? = nil) throws {
         self.address = address
         self.port = port
@@ -191,13 +193,13 @@ public class UDPChannel {
 
     internal func read() throws {
 
-        let data: NSMutableData! = NSMutableData(length: 4096)
+        let (buffer, data) = memoryPool.get()
 
         var addressData = Array <Int8> (count: Int(SOCK_MAXADDRLEN), repeatedValue: 0)
         let (result, address, port) = addressData.withUnsafeMutableBufferPointer() {
             (inout ptr: UnsafeMutableBufferPointer <Int8>) -> (Int, Address?, UInt16?) in
             var addrlen: socklen_t = socklen_t(SOCK_MAXADDRLEN)
-            let result = Darwin.recvfrom(socket, data.mutableBytes, data.length, 0, UnsafeMutablePointer<sockaddr> (ptr.baseAddress), &addrlen)
+            let result = Darwin.recvfrom(socket, buffer.baseAddress, buffer.count, 0, UnsafeMutablePointer<sockaddr> (ptr.baseAddress), &addrlen)
             guard result >= 0 else {
                 return (result, nil, nil)
             }
@@ -215,8 +217,8 @@ public class UDPChannel {
             throw error
         }
 
-        data.length = result
-        let datagram = Datagram(from: (address!, port!), timestamp: Timestamp(), data: DispatchData <Void> (buffer: data.toUnsafeBufferPointer()))
+        let subdata = dispatch_data_create_subrange(data, 0, result)
+        let datagram = Datagram(from: (address!, port!), timestamp: Timestamp(), data: DispatchData <Void> (data: subdata))
         readHandler?(datagram)
     }
 

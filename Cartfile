@@ -1,1 +1,1 @@
-github "schwa/SwiftUtilities" ~> 0.1
+github "schwa/SwiftUtilities" "swift2.3"

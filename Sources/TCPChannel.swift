@@ -249,7 +249,7 @@ public class TCPChannel: Connectable {
             }
             switch (done, dispatch_data_get_size(data!) > 0) {
                 case (false, _), (true, true):
-                    let dispatchData = DispatchData <Void> (data: data)
+                    let dispatchData = DispatchData <Void> (data: data!)
                     strong_self.readCallback?(Result.Success(dispatchData))
                 case (true, false):
                     dispatch_io_close(strong_self.channel, dispatch_io_close_flags_t())

@@ -27,7 +27,7 @@ public class Socket {
     }
 
     func close() throws {
-        Darwin.close(descriptor)
+        _ = Darwin.close(descriptor)
         descriptor = -1
     }
 
@@ -45,8 +45,8 @@ extension Socket {
         }
     }
 
-    public func setNonBlocking(nonBlocking: Bool) throws {
-        SwiftIO.setNonblocking(descriptor, nonBlocking)
+    public func setNonBlocking(_ nonBlocking: Bool) throws {
+        _ = SwiftIO.setNonblocking(descriptor, nonBlocking)
     }
 
 }
@@ -55,10 +55,10 @@ extension Socket {
 
 public extension Socket {
 
-    convenience init(domain: Int32, type: Int32, `protocol`: Int32) throws {
+    convenience init(domain: Int32, type: Int32, protocol: Int32) throws {
         let descriptor = Darwin.socket(domain, type, `protocol`)
         if descriptor < 0 {
-            throw Errno(rawValue: errno) ?? Error.Unknown
+            throw Errno(rawValue: errno) ?? Error.unknown
         }
         self.init(descriptor)
     }
@@ -69,11 +69,11 @@ public extension Socket {
 
 public extension Socket {
 
-    func connect(address: Address) throws {
+    func connect(_ address: Address) throws {
         try connect(address, timeout: 30)
     }
 
-    func connect(address: Address, timeout: Int) throws {
+    func connect(_ address: Address, timeout: Int) throws {
         // Set the socket to be non-blocking
         try setNonBlocking(true)
 
@@ -89,8 +89,8 @@ public extension Socket {
             // This connect call should error out with code EINPROGRESS, if any other error occurs, throw it
             var ret = Darwin.connect(descriptor, UnsafePointer<sockaddr>(addrPtr), socklen_t(addr.ss_len))
             if ret == -1 && errno != EINPROGRESS {
-                Darwin.close(descriptor)
-                throw Errno(rawValue: errno) ?? Error.Unknown
+                _ = Darwin.close(descriptor)
+                throw Errno(rawValue: errno) ?? Error.unknown
             }
             // If connect succeeded immediately
             if ret == 0 {
@@ -105,33 +105,33 @@ public extension Socket {
             // If the descriptor is not in the write set anymore, that means the select call has timed out, tear things down and throw timed out error
             if fdIsSet(descriptor, &writeFileDescriptors) == 0 {
                 // Socket not writable
-                Darwin.close(descriptor)
-                throw Errno(rawValue: ETIMEDOUT) ?? Error.Unknown
+                _ = Darwin.close(descriptor)
+                throw Errno(rawValue: ETIMEDOUT) ?? Error.unknown
             }
 
             switch ret {
             case -1:
                 // Error occurred during select
-                Darwin.close(descriptor)
-                throw Errno(rawValue: errno) ?? Error.Unknown
+                _ = Darwin.close(descriptor)
+                throw Errno(rawValue: errno) ?? Error.unknown
 
             case 1:
                 // select returned successfully with 1 descriptor
                 // Now check error flags in socket options
                 var so_error: Int32 = 0
-                var len = socklen_t(sizeof(Int32))
-                Darwin.getsockopt(descriptor, SOL_SOCKET, SO_ERROR, &so_error, &len)
+                var len = socklen_t(sizeof(Int32.self))
+                _ = Darwin.getsockopt(descriptor, SOL_SOCKET, SO_ERROR, &so_error, &len)
 
                 // There is error
                 if so_error != 0 {
-                    Darwin.close(descriptor)
-                    throw Errno(rawValue: so_error) ?? Error.Unknown
+                    _ = Darwin.close(descriptor)
+                    throw Errno(rawValue: so_error) ?? Error.unknown
                 }
 
             case 0:
                 // Connection has timed out
-                Darwin.close(descriptor)
-                throw Errno(rawValue: ETIMEDOUT) ?? Error.Unknown
+                _ = Darwin.close(descriptor)
+                throw Errno(rawValue: ETIMEDOUT) ?? Error.unknown
             default:
                 break
             }
@@ -142,23 +142,23 @@ public extension Socket {
         }
     }
 
-    func bind(address: Address) throws {
+    func bind(_ address: Address) throws {
         var addr = sockaddr_storage(address: address)
         try withUnsafePointer(&addr) {
             ptr in
             let status = Darwin.bind(descriptor, UnsafePointer <sockaddr> (ptr), socklen_t(addr.ss_len))
             if status != 0 {
-                throw Errno(rawValue: errno) ?? Error.Unknown
+                throw Errno(rawValue: errno) ?? Error.unknown
             }
         }
     }
 
-    func listen(backlog: Int = 1) throws {
+    func listen(_ backlog: Int = 1) throws {
         precondition(type == SOCK_STREAM, "\(#function) should only be used on `SOCK_STREAM` sockets")
 
         let status = Darwin.listen(descriptor, Int32(backlog))
         if status != 0 {
-            throw Errno(rawValue: errno) ?? Error.Unknown
+            throw Errno(rawValue: errno) ?? Error.unknown
         }
     }
 
@@ -168,10 +168,10 @@ public extension Socket {
         return try withUnsafeMutablePointer(&addr) {
             ptr in
 
-            var length = socklen_t(sizeof(sockaddr_storage))
+            var length = socklen_t(sizeof(sockaddr_storage.self))
             let socket = Darwin.accept(descriptor, UnsafeMutablePointer <sockaddr> (ptr), &length)
             if socket < 0 {
-                throw Errno(rawValue: errno) ?? Error.Unknown
+                throw Errno(rawValue: errno) ?? Error.unknown
             }
             // TODO: Validate length
             let address = Address(sockaddr: addr)
@@ -185,10 +185,10 @@ public extension Socket {
         return try withUnsafeMutablePointer(&addr) {
             ptr in
 
-            var length = socklen_t(sizeof(sockaddr_storage))
+            var length = socklen_t(sizeof(sockaddr_storage.self))
             let status = getsockname(descriptor, UnsafeMutablePointer <sockaddr> (ptr), &length)
             if status != 0 {
-                throw Errno(rawValue: errno) ?? Error.Unknown
+                throw Errno(rawValue: errno) ?? Error.unknown
             }
             return Address(sockaddr: addr)
         }
@@ -199,10 +199,10 @@ public extension Socket {
         return try withUnsafeMutablePointer(&addr) {
             ptr in
 
-            var length = socklen_t(sizeof(sockaddr_storage))
+            var length = socklen_t(sizeof(sockaddr_storage.self))
             let status = getpeername(descriptor, UnsafeMutablePointer <sockaddr> (ptr), &length)
             if status != 0 {
-                throw Errno(rawValue: errno) ?? Error.Unknown
+                throw Errno(rawValue: errno) ?? Error.unknown
             }
             return Address(sockaddr: addr)
         }

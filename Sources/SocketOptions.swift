@@ -12,71 +12,71 @@ import SwiftUtilities
 
 extension Socket {
 
-    public func getsockopt <T>(level: Int32, _ name: Int32) throws -> T {
+    public func getsockopt <T>(_ level: Int32, _ name: Int32) throws -> T {
 
-        guard try getsockoptsize(level, name) == sizeof(T) else {
-            fatalError("Expected size of \(T.self) \(sizeof(T)) doesn't match what getsocktopt expects: \(try? getsockoptsize(level, name))")
+        guard try getsockoptsize(level, name) == sizeof(T.self) else {
+            fatalError("Expected size of \(T.self) \(sizeof(T.self)) doesn't match what getsocktopt expects: \(try? getsockoptsize(level, name))")
         }
 
-        let ptr = UnsafeMutablePointer <T>.alloc(1)
+        let ptr = UnsafeMutablePointer <T>(allocatingCapacity: 1)
         defer {
-            ptr.dealloc(1)
+            ptr.deallocateCapacity(1)
         }
-        var length = socklen_t(sizeof(T))
+        var length = socklen_t(sizeof(T.self))
         let result = Darwin.getsockopt(descriptor, level, name, ptr, &length)
         if result != 0 {
-            throw Errno(rawValue: errno) ?? Error.Unknown
+            throw Errno(rawValue: errno) ?? Error.unknown
         }
-        let value = ptr.memory
+        let value = ptr.pointee
         return value
     }
 
-    public func setsockopt <T>(level: Int32, _ name: Int32, _ value: T) throws {
+    public func setsockopt <T>(_ level: Int32, _ name: Int32, _ value: T) throws {
 
-        guard try getsockoptsize(level, name) == sizeof(T) else {
-            fatalError("Expected size of \(T.self) \(sizeof(T)) doesn't match what getsocktopt expects: \(try? getsockoptsize(level, name))")
+        guard try getsockoptsize(level, name) == sizeof(T.self) else {
+            fatalError("Expected size of \(T.self) \(sizeof(T.self)) doesn't match what getsocktopt expects: \(try? getsockoptsize(level, name))")
         }
 
         var value = value
-        let result = Darwin.setsockopt(descriptor, level, name, &value, socklen_t(sizeof(T)))
+        let result = Darwin.setsockopt(descriptor, level, name, &value, socklen_t(sizeof(T.self)))
         if result != 0 {
-            throw Errno(rawValue: errno) ?? Error.Unknown
+            throw Errno(rawValue: errno) ?? Error.unknown
         }
     }
 
     // Just for bools
 
-    public func getsockopt(level: Int32, _ name: Int32) throws -> Bool {
+    public func getsockopt(_ level: Int32, _ name: Int32) throws -> Bool {
         let value: Int32 = try getsockopt(level, name)
         return value != 0
     }
 
-    public func setsockopt(level: Int32, _ name: Int32, _ value: Bool) throws {
+    public func setsockopt(_ level: Int32, _ name: Int32, _ value: Bool) throws {
         let value: Int32 = value ? -1 : 0
         try setsockopt(level, name, value)
     }
 
     // Just for bools
 
-    public func getsockopt(level: Int32, _ name: Int32) throws -> NSTimeInterval {
+    public func getsockopt(_ level: Int32, _ name: Int32) throws -> TimeInterval {
         let value: timeval64 = try getsockopt(level, name)
         return value.timeInterval
     }
 
-    public func setsockopt(level: Int32, _ name: Int32, _ value: NSTimeInterval) throws {
+    public func setsockopt(_ level: Int32, _ name: Int32, _ value: TimeInterval) throws {
         try setsockopt(level, name, timeval64(time: value))
     }
 
     // Test size of a socket option
 
-    private func getsockoptsize(level: Int32, _ name: Int32) throws -> Int {
+    private func getsockoptsize(_ level: Int32, _ name: Int32) throws -> Int {
         var length = socklen_t(256)
-        var buffer = Array <UInt8> (count: Int(length), repeatedValue: 0)
+        var buffer = Array <UInt8> (repeating: 0, count: Int(length))
         return try buffer.withUnsafeMutableBufferPointer() {
-            (inout buffer: UnsafeMutableBufferPointer<UInt8>) -> Int in
+            (buffer: inout UnsafeMutableBufferPointer<UInt8>) -> Int in
             let result = Darwin.getsockopt(descriptor, level, name, buffer.baseAddress, &length)
             if result != 0 {
-                throw Errno(rawValue: errno) ?? Error.Unknown
+                throw Errno(rawValue: errno) ?? Error.unknown
             }
             return Int(length)
         }
@@ -255,7 +255,7 @@ public extension SocketOptions {
     }
 
     /// send timeout
-    var sendTimeout: NSTimeInterval {
+    var sendTimeout: TimeInterval {
         get {
             return try! socket.getsockopt(SOL_SOCKET, SO_SNDTIMEO)
         }
@@ -265,7 +265,7 @@ public extension SocketOptions {
     }
 
     /// receive timeout
-    var receiveTimeout: NSTimeInterval {
+    var receiveTimeout: TimeInterval {
         get {
             return try! socket.getsockopt(SOL_SOCKET, SO_RCVTIMEO)
         }

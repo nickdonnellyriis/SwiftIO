@@ -16,7 +16,7 @@ class TLVTests: XCTestCase {
 
 //    func testReadWrite16Native() throws {
 //        typealias RecordType = TLVRecord <UInt16, UInt16>
-//        let data = try DispatchData <Void> ("Hello world")
+//        let data = try GenericDispatchData <Void> ("Hello world")
 //        let memory = MemoryStream()
 //        let original = RecordType(type: 100, data: data)
 //        try memory.write(original)
@@ -26,7 +26,7 @@ class TLVTests: XCTestCase {
 //
 //    func testReadWrite16Big() throws {
 //        typealias RecordType = TLVRecord <UInt16, UInt16>
-//        let data = try DispatchData <Void> ("Hello world")
+//        let data = try GenericDispatchData <Void> ("Hello world")
 //        let memory = MemoryStream()
 //        memory.endianness = .Big
 //        let original = RecordType(type: 100, data: data)
@@ -37,7 +37,7 @@ class TLVTests: XCTestCase {
 //
 //    func testReadWrite32Big() throws {
 //        typealias RecordType = TLVRecord <UInt32, UInt32>
-//        let data = try DispatchData <Void> ("Hello world")
+//        let data = try GenericDispatchData <Void> ("Hello world")
 //        let memory = MemoryStream()
 //        let original = RecordType(type: 100, data: data)
 //        try memory.write(original)
@@ -51,12 +51,12 @@ class TLVTests: XCTestCase {
         let memory = MemoryStream()
 
         for _ in 0..<2 {
-            let data = try! DispatchData <Void> ("Hello world")
+            let data = try! GenericDispatchData <Void> ("Hello world")
             let original = RecordType(type: 100, data: data)
             try! memory.write(original)
         }
 
-        let data = DispatchData <Void> (buffer: memory.buffer)
+        let data = GenericDispatchData <Void> (buffer: memory.buffer)
 
         let (records, _) = try! RecordType.readMultiple(data, endianness: .Native)
 

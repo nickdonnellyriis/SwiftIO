@@ -52,7 +52,7 @@ class StreamTests: XCTestCase {
     }
 }
 
-func readWriteValue <T: BinaryStreamable where T: Equatable> (value: T, endianness: Endianness = .Native) throws {
+func readWriteValue <T: BinaryStreamable where T: Equatable> (_ value: T, endianness: Endianness = .Native) throws {
     let stream = MemoryStream()
     stream.endianness = endianness
     try stream.write(value)

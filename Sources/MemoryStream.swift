@@ -34,7 +34,7 @@ public class MemoryStream: BinaryInputStream, BinaryOutputStream {
 
     public var endianness = Endianness.Native
 
-    internal var mutableData: NSMutableData = NSMutableData() // TODO: Use DispatchData
+    internal var mutableData: NSMutableData = NSMutableData() // TODO: Use GenericDispatchData
 
     var head: Int = 0
     var remaining: Int {
@@ -44,35 +44,31 @@ public class MemoryStream: BinaryInputStream, BinaryOutputStream {
     public init() {
     }
 
-    public init(buffer: UnsafeBufferPointer <Void>) {
+    public init(buffer: UnsafeBufferPointer <UInt8>) {
         mutableData = NSMutableData(bytes: buffer.baseAddress, length: buffer.length)
     }
 
-    public var buffer: UnsafeBufferPointer <Void> {
-        return mutableData.toUnsafeBufferPointer()
-    }
-
-    public func readData(length length: Int) throws -> DispatchData <Void> {
+    public func readData(length: Int) throws -> GenericDispatchData <UInt8> {
         if length > remaining {
-            throw Error.Generic("Not enough space (requesting \(length) bytes, only \(remaining) bytes remaining")
+            throw Error.generic("Not enough space (requesting \(length) bytes, only \(remaining) bytes remaining")
         }
 
-        let result = DispatchData <Void> (start: buffer.baseAddress.advancedBy(head), count: length)
+        let result = GenericDispatchData <UInt8> (start: UnsafePointer(mutableData.bytes.advanced(by: head)), count: length)
         head += length
         return result
     }
 
-    public func readData() throws -> DispatchData <Void> {
+    public func readData() throws -> GenericDispatchData <UInt8> {
         return try readData(length: remaining)
     }
 
-    public func write(buffer: UnsafeBufferPointer <Void>) throws {
-        mutableData.appendBytes(buffer.baseAddress, length: buffer.count)
+    public func write(_ buffer: UnsafeBufferPointer <UInt8>) throws {
+        mutableData.append(buffer.baseAddress!, length: buffer.count)
         head = mutableData.length
     }
 
-    public var data: NSData {
-        return mutableData
+    public var data: Data {
+        return mutableData as Data
     }
 
     public func rewind() {

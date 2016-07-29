@@ -12,12 +12,12 @@ class Resolver {
 
     static let sharedInstance = Resolver()
 
-    var lock = NSLock()
+    var lock = Lock()
     var staticNames: [String: [Address]] = [:]
     var cache: [String: [Address]] = [:]
-    let queue = dispatch_queue_create("io.schwa.SwiftIO.Resolver", DISPATCH_QUEUE_SERIAL)
+    let queue = DispatchQueue(label: "io.schwa.SwiftIO.Resolver", attributes: DispatchQueueAttributes.serial)
 
-    func addressesForName(name: String) throws -> [Address]? {
+    func addressesForName(_ name: String) throws -> [Address]? {
         return lock.with() {
             if let addresses = staticNames[name] {
                 return addresses
@@ -26,14 +26,14 @@ class Resolver {
         }
     }
 
-    func addressesForName(name: String, callback: Result <[Address]> -> Void) {
+    func addressesForName(_ name: String, callback: (Result <[Address]>) -> Void) {
         let found: Bool = lock.with() {
             if let addresses = staticNames[name] {
-                callback(.Success(addresses))
+                callback(.success(addresses))
                 return true
             }
             if let addresses = cache[name] {
-                callback(.Success(addresses))
+                callback(.success(addresses))
                 return true
             }
             return false
@@ -41,7 +41,7 @@ class Resolver {
         if found {
             return
         }
-        dispatch_async(queue) {
+        queue.async {
             [weak self] in
 
             guard let strong_self = self else {
@@ -71,7 +71,7 @@ extension Resolver {
 //        let path = NSBundle.mainBundle().pathForResource("hosts", ofType: nil)!
         let path = "/etc/hosts"
         let hostsFile = try String(contentsOfFile: path)
-        let items = hostsFile.componentsSeparatedByCharactersInSet(NSCharacterSet.newlineCharacterSet())
+        let items = hostsFile.components(separatedBy: CharacterSet.newlines)
 //            .lazy // lazy takes compile time from 234.3ms to 8498.7ms
             // Filter out empty lines
             .filter() { $0.isEmpty == false }
@@ -80,7 +80,7 @@ extension Resolver {
             // Remove comments
             .filter() { $0.hasPrefix("#") == false }
             // Break into runs of non-whitespace
-            .map() { $0.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceCharacterSet()).filter() { $0.isEmpty == false } }
+            .map() { $0.components(separatedBy: CharacterSet.whitespaces).filter() { $0.isEmpty == false } }
 
         var staticNames: [String: [Address]] = [:]
         try items.forEach() {
@@ -101,19 +101,19 @@ extension Resolver {
 
 private extension String {
     func trimWhitespace() -> String {
-        return stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())
+        return trimmingCharacters(in: CharacterSet.whitespaces)
     }
 }
 
 
 // TODO: Move to swiftutilities
-private func tryGivingResult <R>(@noescape closure: () throws -> R) -> Result <R> {
+private func tryGivingResult <R>(_ closure: @noescape () throws -> R) -> Result <R> {
     do {
         let value = try closure()
-        return .Success(value)
+        return .success(value)
     }
     catch let error {
-        return .Failure(error)
+        return .failure(error)
     }
 
 }

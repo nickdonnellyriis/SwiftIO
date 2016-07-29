@@ -63,7 +63,7 @@ class EchoViewController: NSViewController {
         }
 
         channel.shouldReconnect = {
-            assert(self.channel.state.value == .Disconnected)
+            assert(self.channel.state.value == .disconnected)
             log?.debug("Disconnected!")
 
             dispatch_async(dispatch_get_main_queue()) {
@@ -74,11 +74,11 @@ class EchoViewController: NSViewController {
 
         channel.readCallback = {
             (result) in
-            if case .Failure(let error) = result {
+            if case .failure(let error) = result {
                 log?.debug(error)
                 return
             }
-            if case .Success(let data) = result {
+            if case .success(let data) = result {
                 let string = String(data: data.toNSData(), encoding:NSUTF8StringEncoding)!
 
                 dispatch_async(dispatch_get_main_queue()) {
@@ -95,15 +95,15 @@ class EchoViewController: NSViewController {
                 self.updateConnected()
             }
 
-            if case .Failure(let error) = result {
-                assert(self.channel.state.value == .Disconnected)
+            if case .failure(let error) = result {
+                assert(self.channel.state.value == .disconnected)
                 log?.debug("Connection failure: \(error)")
                 return
             }
 
             let data = "Hello world".dataUsingEncoding(NSUTF8StringEncoding)!
-            let dispatchData = DispatchData <Void> (start: data.bytes, count: data.length)
-            self.channel!.write(dispatchData) {
+            let GenericDispatchData = GenericDispatchData <UInt8> (start: data.bytes, count: data.length)
+            self.channel!.write(GenericDispatchData) {
                 (result) in
                 log?.debug("Write: \(result)")
             }
@@ -132,8 +132,8 @@ class EchoViewController: NSViewController {
         }
 
         let data = input.dataUsingEncoding(NSUTF8StringEncoding)!
-        let dispatchData = DispatchData <Void> (start: data.bytes, count: data.length)
-        self.channel!.write(dispatchData) {
+        let GenericDispatchData = GenericDispatchData <UInt8> (start: data.bytes, count: data.length)
+        self.channel!.write(GenericDispatchData) {
             (result) in
             log?.debug("Write: \(result)")
         }
@@ -141,7 +141,7 @@ class EchoViewController: NSViewController {
     }
 
     func updateConnected() {
-        connected = channel.state.value == .Connected
+        connected = channel.state.value == .connected
         log?.debug("\(channel.state), \(connected)")
     }
 

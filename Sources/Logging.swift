@@ -6,25 +6,25 @@
 //  Copyright © 2015 schwa.io. All rights reserved.
 //
 
-public var logHandler: (Any? -> Void)? = nil
+public var logHandler: ((Any?) -> Void)? = nil
 
 public class Logger {
-    public func debug(subject: Any?) {
+    public func debug(_ subject: Any?) {
         logHandler?(subject)
     }
 }
 
 public let log: Logger? = Logger()
 
-internal func loggingReadHandler(datagram: Datagram) {
+internal func loggingReadHandler(_ datagram: Datagram) {
     log?.debug(String(datagram))
 }
 
-internal func loggingErrorHandler(error: ErrorType) {
+internal func loggingErrorHandler(_ error: ErrorProtocol) {
     log?.debug("ERROR: \(error)")
 }
 
-internal func loggingWriteHandler(success: Bool, error: ErrorType?) {
+internal func loggingWriteHandler(_ success: Bool, error: ErrorProtocol?) {
     if success {
         log?.debug("WRITE")
     }

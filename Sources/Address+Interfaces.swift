@@ -10,22 +10,23 @@ import Darwin
 
 public extension Address {
     static func addressesForInterfaces() throws -> [String: [Address]] {
-        let addressesForInterfaces = getAddressesForInterfaces() as! [String: [NSData]]
-        let pairs: [(String, [Address])] = addressesForInterfaces.flatMap() {
+        let addressesForInterfaces = getAddressesForInterfaces() as! [String: [Data]]
+        let pairs: [(key: String, value: [Address])] = addressesForInterfaces.flatMap() {
             (interface, addressData) -> (String, [Address])? in
 
             if addressData.count == 0 {
                 return nil
             }
             let addresses = addressData.map() {
-                (addressData: NSData) -> Address in
-                let addr = sockaddr_storage(addr: UnsafePointer <sockaddr> (addressData.bytes), length: addressData.length)
+                (addressData: Data) -> Address in
+                let addr = sockaddr_storage(addr: UnsafePointer <sockaddr> ((addressData as NSData).bytes), length: addressData.count)
                 let address = Address(sockaddr: addr)
                 return address
             }
-            return (interface, addresses.sort(<))
+            return (interface, addresses.sorted(isOrderedBefore: <))
         }
-        return Dictionary <String, [Address]> (pairs)
+
+        return Dictionary <String, [Address]> (pairs: pairs)
     }
 }
 
@@ -33,7 +34,7 @@ public extension Address {
 
 
 private extension Dictionary {
-    init(_ pairs: [Element]) {
+    init(pairs: [Element]) {
         self.init()
         for (k, v) in pairs {
             self[k] = v

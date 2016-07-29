@@ -38,17 +38,17 @@ import SwiftUtilities
  This is a subset of what is support by sockaddr. But we mostly care about TCP and UDP.
  */
 public enum InetProtocol {
-    case TCP
-    case UDP
+    case tcp
+    case udp
 }
 
 public extension InetProtocol {
     init?(rawValue: Int32) {
         switch rawValue {
             case IPPROTO_TCP:
-                self = .TCP
+                self = .tcp
             case IPPROTO_UDP:
-                self = .UDP
+                self = .udp
             default:
                 return nil
         }
@@ -56,9 +56,9 @@ public extension InetProtocol {
 
     var rawValue: Int32 {
         switch self {
-            case .TCP:
+            case .tcp:
                 return IPPROTO_TCP
-            case .UDP:
+            case .udp:
                 return IPPROTO_UDP
         }
     }
@@ -70,8 +70,8 @@ public extension InetProtocol {
  This is a subset of what is support by sockaddr. But we mostly care about INET and INET6.
  */
 public enum ProtocolFamily {
-    case INET
-    case INET6
+    case inet
+    case inet6
 }
 
 public extension ProtocolFamily {
@@ -85,18 +85,18 @@ public extension ProtocolFamily {
     init?(rawValue: Int32) {
         switch rawValue {
             case PF_INET:
-                self = .INET
+                self = .inet
             case PF_INET6:
-                self = .INET6
+                self = .inet6
             default:
                 return nil
         }
     }
     var rawValue: Int32 {
         switch self {
-            case .INET:
+            case .inet:
                 return PF_INET
-            case .INET6:
+            case .inet6:
                 return PF_INET6
         }
     }

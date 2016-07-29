@@ -34,9 +34,9 @@ import SwiftUtilities
 public struct Datagram {
     public let from: Address
     public let timestamp: Timestamp
-    public let data: DispatchData <Void>
+    public let data: GenericDispatchData <UInt8>
 
-    public init(from: Address, timestamp: Timestamp = Timestamp(), data: DispatchData <Void>) {
+    public init(from: Address, timestamp: Timestamp = Timestamp(), data: GenericDispatchData <UInt8>) {
         self.from = from
         self.timestamp = timestamp
         self.data = data

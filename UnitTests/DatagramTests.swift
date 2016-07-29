@@ -39,9 +39,9 @@ class DatagramTests: XCTestCase {
     func testExample() {
         let address = try! Address(address: "127.0.0.1", port: 12345)
 
-        let buffer = DispatchData <Void> (buffer: "Hello world".dataUsingEncoding(NSUTF8StringEncoding)!.toUnsafeBufferPointer())
+        let buffer = GenericDispatchData <UInt8> (buffer: "Hello world".data(String.Encoding.utf8)!.toUnsafeBufferPointer())
         let datagram = Datagram(from: address, data: buffer)
-        let encodedData = try! NSData(streamable: datagram)
+        let encodedData = try! Data(streamable: datagram)
         let stream = MemoryStream(buffer: encodedData.toUnsafeBufferPointer())
         let decodedDatagram = try! Datagram.readFrom(stream)
 
@@ -51,8 +51,8 @@ class DatagramTests: XCTestCase {
 
 }
 
-extension NSData {
-    convenience init(streamable: BinaryOutputStreamable) throws {
+extension Data {
+    init(streamable: BinaryOutputStreamable) throws {
         let stream = MemoryStream()
         try streamable.writeTo(stream)
         self.init(data: stream.data)

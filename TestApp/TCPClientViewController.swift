@@ -28,7 +28,7 @@ class TCPClientViewController: NSViewController {
     func createClient() throws -> TCPChannel {
 
         guard let addressString = self.address else {
-            throw Error.Generic("Could not create address")
+            throw Error.generic("Could not create address")
         }
 
         let address = try Address(address: addressString)
@@ -55,9 +55,9 @@ class TCPClientViewController: NSViewController {
             self.state = String(new)
 
             switch (old, new) {
-                case (_, .Disconnected):
+                case (_, .disconnected):
                     self.connected = false
-                case (_, .Connected):
+                case (_, .connected):
                     self.connected = true
                 default:
                     break
@@ -66,7 +66,7 @@ class TCPClientViewController: NSViewController {
 
         clientChannel.readCallback = {
             (result) in
-            if case .Failure(let error) = result {
+            if case .failure(let error) = result {
                 log?.debug("Client read callback: \(error)")
                 return
             }
@@ -94,8 +94,8 @@ class TCPClientViewController: NSViewController {
         clientChannel.connect() {
             (result) in
 
-            if case .Failure(let error) = result {
-                assert(clientChannel.state.value == .Disconnected)
+            if case .failure(let error) = result {
+                assert(clientChannel.state.value == .disconnected)
                 SwiftIO.log?.debug("Client connect callback: \(error)")
                 dispatch_async(dispatch_get_main_queue()) {
                     self.presentError(error as NSError)
@@ -121,7 +121,7 @@ class TCPClientViewController: NSViewController {
             fatalError()
         }
 
-        clientChannel.write(try! DispatchData <Void> ("Hello \(count)\r\n")) {
+        clientChannel.write(try! GenericDispatchData <UInt8> ("Hello \(count)\r\n")) {
             result in
         }
 

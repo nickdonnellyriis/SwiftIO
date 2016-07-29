@@ -13,16 +13,16 @@ import XCTest
 class ServiceScannerTests: XCTestCase {
     
     func testIPV4Address1() {
-        let scanner = NSScanner(string: "255.255.255.255")
+        let scanner = Scanner(string: "255.255.255.255")
         var address: String?
         let result = scanner.scanIPV4Address(&address)
         XCTAssertTrue(result)
-        XCTAssertTrue(scanner.atEnd)
+        XCTAssertTrue(scanner.isAtEnd)
         XCTAssertEqual(address, "255.255.255.255")
     }
     
     func testIPV4Address2() {
-        let scanner = NSScanner(string: "X.255.255.255")
+        let scanner = Scanner(string: "X.255.255.255")
         var address: String?
         let result = scanner.scanIPV4Address(&address)
         XCTAssertFalse(result)
@@ -30,25 +30,25 @@ class ServiceScannerTests: XCTestCase {
     }
 
     func testDomain() {
-        let scanner = NSScanner(string: "test-domain.apple.com")
+        let scanner = Scanner(string: "test-domain.apple.com")
         var address: String?
         let result = scanner.scanDomain(&address)
         XCTAssertTrue(result)
-        XCTAssertTrue(scanner.atEnd)
+        XCTAssertTrue(scanner.isAtEnd)
         XCTAssertEqual(address, "test-domain.apple.com")
     }
 
     func testDomainLocal() {
-        let scanner = NSScanner(string: "domain.local.")
+        let scanner = Scanner(string: "domain.local.")
         var address: String?
         let result = scanner.scanDomain(&address)
         XCTAssertTrue(result)
-        XCTAssertTrue(scanner.atEnd)
+        XCTAssertTrue(scanner.isAtEnd)
         XCTAssertEqual(address, "domain.local.")
     }
 
     func testDomainBad() {
-        let scanner = NSScanner(string: ".apple.com")
+        let scanner = Scanner(string: ".apple.com")
         var address: String?
         let result = scanner.scanDomain(&address)
         XCTAssertFalse(result)

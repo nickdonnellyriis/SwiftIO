@@ -104,13 +104,13 @@ class UDPViewController: NSViewController {
                 return
             }
 
-            let data: DispatchData <Void> = try DispatchData(body)
+            let data: GenericDispatchData <UInt8> = try GenericDispatchData(body)
 
             let callback = {
                 (result: Result <Void>) in
 
                 log?.debug(result)
-                if case .Failure(let error) = result {
+                if case .failure(let error) = result {
                     dispatch_async(dispatch_get_main_queue()) {
                         self.presentError(error as NSError)
                     }

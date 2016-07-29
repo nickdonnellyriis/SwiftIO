@@ -9,22 +9,22 @@
 import SwiftUtilities
 
 public enum ConnectionState {
-    case Disconnected
-    case Connecting
-    case Connected
-    case Disconnecting
+    case disconnected
+    case connecting
+    case connected
+    case disconnecting
 }
 
 public protocol Connectable {
     associatedtype ConnectionStateType
 
     var state: ConnectionStateType { get }
-    func connect(callback: SwiftUtilities.Result <Void> -> Void)
-    func disconnect(callback: SwiftUtilities.Result <Void> -> Void)
+    func connect(_ callback: (SwiftUtilities.Result <Void>) -> Void)
+    func disconnect(_ callback: (SwiftUtilities.Result <Void>) -> Void)
 }
 
 public extension Connectable where ConnectionStateType == ConnectionState {
     var connected: Bool {
-        return state == .Connected
+        return state == .connected
     }
 }

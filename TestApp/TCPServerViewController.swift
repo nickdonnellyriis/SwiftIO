@@ -37,13 +37,13 @@ extension TCPServerViewController {
 
             log?.debug("clientWillConnect: \(try! client.socket.getPeer())")
 
-            var buffer = DispatchData <Void> ()
+            var buffer = GenericDispatchData <UInt8> ()
             client.readCallback = {
                 (result) in
 
                 log?.debug("Server Got data")
 
-                if case .Success(let data) = result {
+                if case .success(let data) = result {
                     buffer = buffer + data
                     let (records, remaining) = try! Record.readMultiple(buffer, endianness: self.endianness)
                     for record in records {
@@ -94,7 +94,7 @@ extension TCPServerViewController {
 
 
 extension String {
-    init(data: DispatchData <Void>, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
+    init(data: GenericDispatchData <UInt8>, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
         let nsdata = data.toNSData()
         self = NSString(data: nsdata, encoding: encoding) as! String
     }

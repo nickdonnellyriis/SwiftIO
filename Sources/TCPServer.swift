@@ -12,12 +12,12 @@ public class TCPServer {
 
     public let addresses: [Address]
 
-    public var clientShouldConnect: (Address -> Bool)?
-    public var clientWillConnect: (TCPChannel -> Void)?
-    public var clientDidConnect: (TCPChannel -> Void)?
-    public var clientDidDisconnect: (TCPChannel -> Void)?
+    public var clientShouldConnect: ((Address) -> Bool)?
+    public var clientWillConnect: ((TCPChannel) -> Void)?
+    public var clientDidConnect: ((TCPChannel) -> Void)?
+    public var clientDidDisconnect: ((TCPChannel) -> Void)?
 
-    public var errorDidOccur: (ErrorType -> Void)? = {
+    public var errorDidOccur: ((ErrorProtocol) -> Void)? = {
         (error) in
         log?.debug("Server got: \(error)")
     }
@@ -25,7 +25,7 @@ public class TCPServer {
     public var listenersByAddress: [Address: TCPListener] = [:]
     public var connections = Atomic(Set <TCPChannel> ())
 
-    private let queue = dispatch_queue_create("io.schwa.TCPServer", DISPATCH_QUEUE_SERIAL)
+    private let queue = DispatchQueue(label: "io.schwa.TCPServer", attributes: DispatchQueueAttributes.serial)
 
     public init(address: Address) throws {
         self.addresses = [address]
@@ -37,7 +37,7 @@ public class TCPServer {
         }
     }
 
-    private func startListening(address: Address) throws {
+    private func startListening(_ address: Address) throws {
 
         let listener = try TCPListener(address: address, queue: queue)
 
@@ -49,13 +49,13 @@ public class TCPServer {
                 return
             }
 
-            channel.state.addObserver(strong_self, queue: dispatch_get_main_queue()) {
+            channel.state.addObserver(strong_self, queue: DispatchQueue.main) {
                 (old, new) in
 
                 guard let strong_self = self else {
                     return
                 }
-                if new == .Disconnected {
+                if new == .disconnected {
                     strong_self.connections.value.remove(channel)
                     strong_self.clientDidDisconnect?(channel)
                 }

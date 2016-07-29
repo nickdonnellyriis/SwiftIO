@@ -10,48 +10,48 @@ import Foundation
 
 // MARK: -
 
-internal func + (lhs: NSCharacterSet, rhs: NSCharacterSet) -> NSCharacterSet {
-    let scratch = lhs.mutableCopy() as! NSMutableCharacterSet
-    scratch.formUnionWithCharacterSet(rhs)
-    return scratch
+internal func + (lhs: CharacterSet, rhs: CharacterSet) -> CharacterSet {
+    let scratch = (lhs as NSCharacterSet).mutableCopy() as! NSMutableCharacterSet
+    scratch.formUnion(with: rhs)
+    return scratch as CharacterSet
 }
 
-internal extension NSCharacterSet {
+internal extension CharacterSet {
 
-    class func asciiLetterCharacterSet() -> NSCharacterSet {
+    static func asciiLetterCharacterSet() -> CharacterSet {
         return asciiLowercaseLetterCharacterSet() + asciiUppercaseLetterCharacterSet()
     }
 
-    class func asciiLowercaseLetterCharacterSet() -> NSCharacterSet {
-        return NSCharacterSet(charactersInString: "abcdefghijklmnopqrstuvwxyz")
+    static func asciiLowercaseLetterCharacterSet() -> CharacterSet {
+        return CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz")
     }
 
-    class func asciiUppercaseLetterCharacterSet() -> NSCharacterSet {
-        return NSCharacterSet(charactersInString: "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+    static func asciiUppercaseLetterCharacterSet() -> CharacterSet {
+        return CharacterSet(charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     }
 
-    class func asciiDecimalDigitsCharacterSet() -> NSCharacterSet {
-        return NSCharacterSet(charactersInString: "0123456789")
+    static func asciiDecimalDigitsCharacterSet() -> CharacterSet {
+        return CharacterSet(charactersIn: "0123456789")
     }
 
-    class func asciiAlphanumericCharacterSet() -> NSCharacterSet {
+    static func asciiAlphanumericCharacterSet() -> CharacterSet {
         return asciiLetterCharacterSet() + asciiDecimalDigitsCharacterSet()
     }
 
-    class func asciiHexDigitsCharacterSet() -> NSCharacterSet {
-        return asciiDecimalDigitsCharacterSet() + NSCharacterSet(charactersInString: "ABCDEFabcdef")
+    static func asciiHexDigitsCharacterSet() -> CharacterSet {
+        return asciiDecimalDigitsCharacterSet() + CharacterSet(charactersIn: "ABCDEFabcdef")
     }
 }
 
 // MARK: -
 
-internal extension NSScanner {
+internal extension Scanner {
 
     var remaining: String {
-        return (string as NSString).substringFromIndex(scanLocation)
+        return (string as NSString).substring(from: scanLocation)
     }
 
-    func with(@noescape closure: () -> Bool) -> Bool {
+    func with(_ closure: @noescape () -> Bool) -> Bool {
         let savedCharactersToBeSkipped = charactersToBeSkipped
         let savedLocation = scanLocation
         let result = closure()
@@ -62,17 +62,17 @@ internal extension NSScanner {
         return result
     }
 
-    func scanString(string: String) -> Bool {
-        return scanString(string, intoString: nil)
+    func scanString(_ string: String) -> Bool {
+        return scanString(string, into: nil)
     }
 
-    func scanBracketedString(openBracket: String, closeBracket: String, inout intoString: String?) -> Bool {
+    func scanBracketedString(_ openBracket: String, closeBracket: String, intoString: inout String?) -> Bool {
         return with() {
             if scanString(openBracket) == false {
                 return false
             }
             var temp: NSString?
-            if scanUpToString(closeBracket, intoString: &temp) == false {
+            if scanUpTo(closeBracket, into: &temp) == false {
                 return false
             }
             if scanString(closeBracket) == false {
@@ -83,7 +83,7 @@ internal extension NSScanner {
         }
     }
 
-    func scan(inout intoString: String?, @noescape closure: () -> Bool) -> Bool {
+    func scan(_ intoString: inout String?, closure: @noescape () -> Bool) -> Bool {
         let savedCharactersToBeSkipped = charactersToBeSkipped
         defer {
             charactersToBeSkipped = savedCharactersToBeSkipped
@@ -94,7 +94,7 @@ internal extension NSScanner {
             return false
         }
         let range = NSRange(location: savedLocation, length: scanLocation - savedLocation)
-        intoString = (string as NSString).substringWithRange(range)
+        intoString = (string as NSString).substring(with: range)
         return true
     }
 
@@ -102,13 +102,13 @@ internal extension NSScanner {
 
 // MARK: -
 
-internal extension NSScanner {
-    func scanIPV6Address(inout intoString: String?) -> Bool {
+internal extension Scanner {
+    func scanIPV6Address(_ intoString: inout String?) -> Bool {
         return with() {
             charactersToBeSkipped = nil
-            let characterSet = NSCharacterSet.asciiHexDigitsCharacterSet() + NSCharacterSet(charactersInString: ":.")
+            let characterSet = CharacterSet.asciiHexDigitsCharacterSet() + CharacterSet(charactersIn: ":.")
             var temp: NSString?
-            if scanCharactersFromSet(characterSet, intoString: &temp) == false {
+            if scanCharacters(from: characterSet, into: &temp) == false {
                 return false
             }
             intoString = temp! as String
@@ -116,12 +116,12 @@ internal extension NSScanner {
         }
     }
 
-    func scanIPV4Address(inout intoString: String?) -> Bool {
+    func scanIPV4Address(_ intoString: inout String?) -> Bool {
         return with() {
             charactersToBeSkipped = nil
-            let characterSet = NSCharacterSet.asciiDecimalDigitsCharacterSet() + NSCharacterSet(charactersInString: ".")
+            let characterSet = CharacterSet.asciiDecimalDigitsCharacterSet() + CharacterSet(charactersIn: ".")
             var temp: NSString?
-            if scanCharactersFromSet(characterSet, intoString: &temp) == false {
+            if scanCharacters(from: characterSet, into: &temp) == false {
                 return false
             }
             intoString = temp! as String
@@ -130,7 +130,7 @@ internal extension NSScanner {
     }
 
     /// Scan a "domain". Domain is considered a sequence of hostnames seperated by dots.
-    func scanDomain(inout intoString: String?) -> Bool {
+    func scanDomain(_ intoString: inout String?) -> Bool {
         let savedLocation = scanLocation
         while true {
             var hostname: String?
@@ -145,20 +145,20 @@ internal extension NSScanner {
         if range.length == 0 {
             return false
         }
-        intoString = (string as NSString).substringWithRange(range)
+        intoString = (string as NSString).substring(with: range)
         return true
     }
 
     /// Scan a "hostname".
-    func scanHostname(inout intoString: String?) -> Bool {
+    func scanHostname(_ intoString: inout String?) -> Bool {
         return with() {
             var output = ""
             var temp: NSString?
-            if scanCharactersFromSet(NSCharacterSet.asciiAlphanumericCharacterSet(), intoString: &temp) == false {
+            if scanCharacters(from: CharacterSet.asciiAlphanumericCharacterSet(), into: &temp) == false {
                 return false
             }
             output += temp! as String
-            if scanCharactersFromSet(NSCharacterSet.asciiAlphanumericCharacterSet() + NSCharacterSet(charactersInString: "-"), intoString: &temp) == true {
+            if scanCharacters(from: CharacterSet.asciiAlphanumericCharacterSet() + CharacterSet(charactersIn: "-"), into: &temp) == true {
                 output += temp! as String
             }
             intoString = output
@@ -167,10 +167,10 @@ internal extension NSScanner {
     }
 
     /// Scan a port/service name. For purposes of this we consider this any alphanumeric sequence and rely on getaddrinfo
-    func scanPort(inout intoString: String?) -> Bool {
-        let characterSet = NSCharacterSet.asciiAlphanumericCharacterSet() + NSCharacterSet(charactersInString: "-")
+    func scanPort(_ intoString: inout String?) -> Bool {
+        let characterSet = CharacterSet.asciiAlphanumericCharacterSet() + CharacterSet(charactersIn: "-")
         var temp: NSString?
-        if scanCharactersFromSet(characterSet, intoString: &temp) == false {
+        if scanCharacters(from: characterSet, into: &temp) == false {
             return false
         }
         intoString = temp! as String
@@ -178,15 +178,15 @@ internal extension NSScanner {
     }
 
     /// Scan an address into a hostname and a port. Very crude. Rely on getaddrinfo.
-    func scanAddress(inout address: String?, inout port: String?) -> Bool {
+    func scanAddress(_ address: inout String?, port: inout String?) -> Bool {
         var string: String?
 
         if scanBracketedString("[", closeBracket: "]", intoString: &string) == true {
-            let scanner = NSScanner(string: string!)
+            let scanner = Scanner(string: string!)
             if scanner.scanIPV6Address(&address) == false {
                 return false
             }
-            if scanner.atEnd == false {
+            if scanner.isAtEnd == false {
                 return false
             }
 
@@ -199,7 +199,7 @@ internal extension NSScanner {
         }
 
         if scanString(":") {
-            scanPort(&port)
+            _ = scanPort(&port)
         }
         return true
     }
@@ -207,11 +207,11 @@ internal extension NSScanner {
 
 // MARK: -
 
-public func scanAddress(string: String, inout address: String?, inout port: String?) -> Bool {
-    let scanner = NSScanner(string: string.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()))
+public func scanAddress(_ string: String, address: inout String?, port: inout String?) -> Bool {
+    let scanner = Scanner(string: string.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines))
     scanner.charactersToBeSkipped = nil
     var result = scanner.scanAddress(&address, port: &port)
-    if scanner.atEnd == false {
+    if scanner.isAtEnd == false {
         result = false
     }
     if result == false {

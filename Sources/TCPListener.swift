@@ -11,25 +11,25 @@ import SwiftUtilities
 public class TCPListener {
 
     public let address: Address
-    public let queue: dispatch_queue_t
+    public let queue: DispatchQueue
     public private(set) var listeningSocket: Socket?
     public var listening: Bool {
         return listeningSocket != nil
     }
 
-    public var clientShouldConnect: (Address -> Bool)?
-    public var clientWillConnect: (TCPChannel -> Void)?
-    public var clientDidConnect: (TCPChannel -> Void)?
-    public var errorDidOccur: (ErrorType -> Void)? = {
+    public var clientShouldConnect: ((Address) -> Bool)?
+    public var clientWillConnect: ((TCPChannel) -> Void)?
+    public var clientDidConnect: ((TCPChannel) -> Void)?
+    public var errorDidOccur: ((ErrorProtocol) -> Void)? = {
         (error) in
         log?.debug("Server got: \(error)")
     }
 
-    private var source: dispatch_source_t!
+    private var source: DispatchSource!
 
-    public init(address: Address, queue: dispatch_queue_t? = nil) throws {
+    public init(address: Address, queue: DispatchQueue? = nil) throws {
         self.address = address
-        self.queue = queue ?? dispatch_queue_create("io.schwa.TCPListener", DISPATCH_QUEUE_SERIAL)
+        self.queue = queue ?? DispatchQueue(label: "io.schwa.TCPListener", attributes: DispatchQueueAttributes.serial)
     }
 
     public func startListening() throws {
@@ -37,7 +37,7 @@ public class TCPListener {
         listeningSocket = try Socket(domain: address.family.rawValue, type: SOCK_STREAM, protocol: IPPROTO_TCP)
 
         guard let listeningSocket = listeningSocket else {
-            throw Error.Generic("Socket() failed")
+            throw Error.generic("Socket() failed")
         }
 
         listeningSocket.socketOptions.reuseAddress = true
@@ -46,18 +46,18 @@ public class TCPListener {
         try listeningSocket.setNonBlocking(true)
         try listeningSocket.listen()
 
-        source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, UInt(listeningSocket.descriptor), 0, queue)
-        dispatch_source_set_event_handler(source) {
+        source = DispatchSource.read(fileDescriptor: listeningSocket.descriptor, queue: queue) /*Migrator FIXME: Use DispatchSourceRead to avoid the cast*/ as! DispatchSource
+        source.setEventHandler {
             [weak self] in
 
             self?.accept()
         }
-        dispatch_resume(source)
+        source.resume()
     }
 
     public func stopListening() throws {
         if let source = source {
-            dispatch_source_cancel(source)
+            source.cancel()
             self.source = nil
         }
         listeningSocket = nil
@@ -66,11 +66,11 @@ public class TCPListener {
     private func accept() {
         do {
             guard let listeningSocket = listeningSocket else {
-                throw Error.Generic("Socket() failed")
+                throw Error.generic("Socket() failed")
             }
             let (socket, address) = try listeningSocket.accept()
 
-            if let clientShouldConnect = clientShouldConnect where clientShouldConnect(address) == false {
+            if let clientShouldConnect = clientShouldConnect, clientShouldConnect(address) == false {
                 return
             }
 

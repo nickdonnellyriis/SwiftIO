@@ -8,11 +8,12 @@
 
 import SwiftUtilities
 
-private func write <T: EndianConvertable> (stream: BinaryOutputStream, value: T) throws {
+
+private func write <T: EndianConvertable> (_ stream: BinaryOutputStream, value: T) throws {
     var value = value.toEndianness(stream.endianness)
     let buffer = withUnsafePointer(&value) {
-        (pointer: UnsafePointer <T>) -> UnsafeBufferPointer <Void> in
-        return UnsafeBufferPointer(start: pointer, count: sizeof(T))
+        (pointer: UnsafePointer <T>) -> UnsafeBufferPointer <UInt8> in
+        return UnsafeBufferPointer(start: UnsafePointer(pointer), count: sizeof(T.self))
     }
     try stream.write(buffer)
 }
@@ -20,31 +21,31 @@ private func write <T: EndianConvertable> (stream: BinaryOutputStream, value: T)
 // MARK: -
 
 extension Int: BinaryOutputStreamable {
-    public func writeTo(stream: BinaryOutputStream) throws {
+    public func writeTo(_ stream: BinaryOutputStream) throws {
         try write(stream, value: self)
     }
 }
 
 extension Int8: BinaryOutputStreamable {
-    public func writeTo(stream: BinaryOutputStream) throws {
+    public func writeTo(_ stream: BinaryOutputStream) throws {
         try write(stream, value: self)
     }
 }
 
 extension Int16: BinaryOutputStreamable {
-    public func writeTo(stream: BinaryOutputStream) throws {
+    public func writeTo(_ stream: BinaryOutputStream) throws {
         try write(stream, value: self)
     }
 }
 
 extension Int32: BinaryOutputStreamable {
-    public func writeTo(stream: BinaryOutputStream) throws {
+    public func writeTo(_ stream: BinaryOutputStream) throws {
         try write(stream, value: self)
     }
 }
 
 extension Int64: BinaryOutputStreamable {
-    public func writeTo(stream: BinaryOutputStream) throws {
+    public func writeTo(_ stream: BinaryOutputStream) throws {
         try write(stream, value: self)
     }
 }
@@ -52,31 +53,31 @@ extension Int64: BinaryOutputStreamable {
 // MARK: -
 
 extension UInt: BinaryOutputStreamable {
-    public func writeTo(stream: BinaryOutputStream) throws {
+    public func writeTo(_ stream: BinaryOutputStream) throws {
         try write(stream, value: self)
     }
 }
 
 extension UInt8: BinaryOutputStreamable {
-    public func writeTo(stream: BinaryOutputStream) throws {
+    public func writeTo(_ stream: BinaryOutputStream) throws {
         try write(stream, value: self)
     }
 }
 
 extension UInt16: BinaryOutputStreamable {
-    public func writeTo(stream: BinaryOutputStream) throws {
+    public func writeTo(_ stream: BinaryOutputStream) throws {
         try write(stream, value: self)
     }
 }
 
 extension UInt32: BinaryOutputStreamable {
-    public func writeTo(stream: BinaryOutputStream) throws {
+    public func writeTo(_ stream: BinaryOutputStream) throws {
         try write(stream, value: self)
     }
 }
 
 extension UInt64: BinaryOutputStreamable {
-    public func writeTo(stream: BinaryOutputStream) throws {
+    public func writeTo(_ stream: BinaryOutputStream) throws {
         try write(stream, value: self)
     }
 }
@@ -84,15 +85,15 @@ extension UInt64: BinaryOutputStreamable {
 // MARK: -
 
 extension Float: BinaryOutputStreamable {
-    public func writeTo(stream: BinaryOutputStream) throws {
-        let bitValue = unsafeBitCast(self, UInt32.self)
+    public func writeTo(_ stream: BinaryOutputStream) throws {
+        let bitValue = unsafeBitCast(self, to: UInt32.self)
         try write(stream, value: bitValue)
     }
 }
 
 extension Double: BinaryOutputStreamable {
-    public func writeTo(stream: BinaryOutputStream) throws {
-        let bitValue = unsafeBitCast(self, UInt64.self)
+    public func writeTo(_ stream: BinaryOutputStream) throws {
+        let bitValue = unsafeBitCast(self, to: UInt64.self)
         try write(stream, value: bitValue)
     }
 }

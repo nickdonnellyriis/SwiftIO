@@ -32,14 +32,14 @@ import SwiftUtilities
 
 public protocol BinaryInputStream {
     var endianness: Endianness { get }
-    func readData(length length: Int) throws -> DispatchData <Void>
-    func readData() throws -> DispatchData <Void>
+    func readData(length: Int) throws -> GenericDispatchData <UInt8>
+    func readData() throws -> GenericDispatchData <UInt8>
 }
 
 // MARK: -
 
 public protocol BinaryInputStreamable {
-    static func readFrom(stream: BinaryInputStream) throws -> Self
+    static func readFrom(_ stream: BinaryInputStream) throws -> Self
 }
 
 public extension BinaryInputStream {

@@ -64,4 +64,12 @@ class TLVTests: XCTestCase {
         // TODO: Actually test the data here!
     }
 
+    func testDispatchDataSplit() {
+
+        let data = DispatchData(string: "Hello world")!
+        let splitdata = data.split(to: 5)
+        XCTAssert(data.count == 11)
+        XCTAssert(splitdata.0.count == 5)
+        XCTAssert(splitdata.1.count == 6)
+    }
 }

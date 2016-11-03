@@ -137,7 +137,7 @@ public extension DispatchData {
 
     func split(to: Int) -> (DispatchData, DispatchData) {
         let lhs = subdata(in: 0..<to)
-        let rhs = subdata(in: to..<(count - to))
+        let rhs = subdata(in: to..<endIndex)
         return (lhs, rhs)
     }
 
@@ -164,7 +164,7 @@ public extension DispatchData {
 
     func split <R> (to: Int, body: (DispatchData, DispatchData) throws -> R) throws -> R {
         let lhs = subdata(in: 0..<to)
-        let rhs = subdata(in: to..<(count - to))
+        let rhs = subdata(in: to..<endIndex)
         return try body(lhs, rhs)
     }
 }

@@ -241,11 +241,6 @@ private extension UDPChannel {
             return Address(sockaddr: pointer.pointee)
         }
 
-        guard address.port == self.address.port else {
-            // Listen only for one particular port
-            return
-        }
-        
         let readData = DispatchData(data: readBuffer)
 
         let datagram = Datagram(from: address, timestamp: Timestamp(), data: readData)

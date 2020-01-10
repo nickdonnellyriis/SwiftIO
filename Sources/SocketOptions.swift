@@ -20,7 +20,7 @@ public extension Socket {
 
         let ptr = UnsafeMutablePointer <T>.allocate(capacity: 1)
         defer {
-            ptr.deallocate(capacity: 1)
+            ptr.deallocate()
         }
         var length = socklen_t(MemoryLayout<T>.size)
         let result = Darwin.getsockopt(descriptor, level, name, ptr, &length)

@@ -180,7 +180,7 @@ public class UDPChannel {
                 callback(.failure(error))
                 return
             }
-            callback(.success())
+            callback(.success(()))
         }
     }
 
@@ -194,7 +194,7 @@ public class UDPChannel {
                 writeHandler(.failure(error))
                 return
             }
-            writeHandler(.success())
+            writeHandler(.success(()))
         }
     }
 }
@@ -218,11 +218,9 @@ private extension UDPChannel {
         var readBuffer = Data(count: 4096)
         var socketAddrBuffer = Data(count: Int(SOCK_MAXADDRLEN))
 
-        try readBuffer.withUnsafeMutableBytes() {
-            (readBufferPointer: UnsafeMutablePointer <UInt8>) in
+        let (readBufCount, sockaddrBufCount) = try readBuffer.withUnsafeMutableBytes() { [ readBuffer = readBuffer ] (readBufferPointer: UnsafeMutablePointer <UInt8>) in
 
-            try socketAddrBuffer.withUnsafeMutableBytes() {
-                (socketBufferPointer: UnsafeMutablePointer <sockaddr>) in
+            try socketAddrBuffer.withUnsafeMutableBytes() { [socketAddrBuffer = socketAddrBuffer] (socketBufferPointer: UnsafeMutablePointer <sockaddr>) -> (Int, Int) in
 
                 var socketlen = socklen_t(socketAddrBuffer.count)
                 let result = recvfrom(socket.descriptor, readBufferPointer, readBuffer.count, 0, socketBufferPointer, &socketlen)
@@ -231,10 +229,13 @@ private extension UDPChannel {
                     errorHandler?(error)
                     throw error
                 }
-                readBuffer.count = result
-                socketAddrBuffer.count = max(Int(socketlen), MemoryLayout<sockaddr_storage>.size)
+                
+                return (result, max(Int(socketlen), MemoryLayout<sockaddr_storage>.size))
             }
         }
+        
+        readBuffer.count = readBufCount
+        socketAddrBuffer.count = sockaddrBufCount
 
         let address = socketAddrBuffer.withUnsafeBytes() {
             (pointer: UnsafePointer <sockaddr_storage>) in

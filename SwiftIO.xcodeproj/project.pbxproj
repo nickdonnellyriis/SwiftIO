@@ -362,6 +362,7 @@
 				45B9DE8D1B753363009FD963 /* UnitTests */,
 				45DD2DAC1B76AD850002994A /* TestApp */,
 				45E240071B0E8A700001F5B9 /* Products */,
+				84F7BDA723C8CE2D0031B496 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -374,6 +375,13 @@
 				45DD2DAB1B76AD850002994A /* TestApp.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		84F7BDA723C8CE2D0031B496 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -514,6 +522,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -967,7 +976,7 @@
 				PRODUCT_NAME = SwiftIO;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
 		};
@@ -992,7 +1001,7 @@
 				PRODUCT_NAME = SwiftIO;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
-				SWIFT_VERSION = 3.0;
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};

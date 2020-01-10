@@ -44,7 +44,7 @@ extension TLVRecord: BinaryInputStreamable {
     public static func readFrom(_ stream: BinaryInputStream) throws -> TLVRecord {
         let type: Type = try stream.read()
         let length: Length = try stream.read()
-        let data: DispatchData = try stream.readData(count: Int(length.toUIntMax()))
+        let data: DispatchData = try stream.readData(count: Int(length))
         let record = TLVRecord(type: type, data: data)
         return record
      }
@@ -55,7 +55,7 @@ extension TLVRecord: BinaryInputStreamable {
 extension TLVRecord: BinaryOutputStreamable {
     public func writeTo(stream: BinaryOutputStream) throws {
         try stream.write(value: type)
-        let length = Length(UIntMax(data.count.toEndianness(stream.endianness)))
+        let length = Length(UInt(data.count.toEndianness(stream.endianness)))
 
         // TODO
 //        guard length <= Length.max else {
@@ -72,7 +72,7 @@ extension TLVRecord: BinaryOutputStreamable {
 
 public extension TLVRecord {
     func toDispatchData(_ endianness: Endianness) throws -> DispatchData {
-        let length = Length(UIntMax(self.data.count))
+        let length = Length(UInt(self.data.count))
         let data = DispatchData ()
             + DispatchData (value: type.toEndianness(endianness))
             + DispatchData (value: length.toEndianness(endianness))
@@ -96,7 +96,7 @@ public extension TLVRecord {
             return try remaining.split() {
                 (length: Length, remaining: DispatchData) in
                 // Convert the length from endianness
-                let length = Int(length.fromEndianness(endianness).toIntMax())
+                let length = Int(length.fromEndianness(endianness))
                 // If we don't have enough remaining data to read the payload: exit.
                 if remaining.count < length {
                     return (nil, data)

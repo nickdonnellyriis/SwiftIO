@@ -114,9 +114,8 @@ public class TCPChannel: Connectable {
                 strong_self.state.value = .connected
                 strong_self.createStream()
                 log?.debug("\(strong_self): Connection success.")
-                callback(.success())
-            }
-            catch let error {
+                callback(.success(()))
+            } catch let error {
                 strong_self.state.value = .disconnected
                 log?.debug("\(strong_self): Connection failure: \(error).")
                 callback(.failure(error))
@@ -155,7 +154,7 @@ public class TCPChannel: Connectable {
                 callback(Result.failure(Errno(rawValue: error)!))
                 return
             }
-            callback(Result.success())
+            callback(Result.success(()))
         }
     }
 
@@ -216,11 +215,11 @@ public class TCPChannel: Connectable {
         state.value = .disconnected
 
         if let shouldReconnect = shouldReconnect , remoteDisconnect == true {
-            let reconnectFlag = shouldReconnect()
+            let reconnectFlag = shouldReconnect(())
             if reconnectFlag == true {
                 let time = DispatchTime.now() + Double(Int64(reconnectionDelay * 1000000000)) / Double(NSEC_PER_SEC)
                 queue.asyncAfter(deadline: time) {
-                    [weak self] (result) in
+                    [weak self] in
 
                     guard let strong_self = self else {
                         return
@@ -232,7 +231,7 @@ public class TCPChannel: Connectable {
             }
         }
 
-        disconnectCallback?(Result.success())
+        disconnectCallback?(Result.success(()))
         disconnectCallback = nil
     }
 

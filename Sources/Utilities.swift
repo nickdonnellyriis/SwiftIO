@@ -10,6 +10,7 @@ import Darwin
 
 internal extension timeval {
     init(time: TimeInterval) {
+        self.init()
         tv_sec = __darwin_time_t(time)
         tv_usec = __darwin_suseconds_t((time - floor(time)) * TimeInterval(USEC_PER_SEC))
     }
@@ -21,6 +22,7 @@ internal extension timeval {
 
 internal extension timeval64 {
     init(time: TimeInterval) {
+        self.init()
         tv_sec = __int64_t(time)
         tv_usec = __int64_t((time - floor(time)) * TimeInterval(USEC_PER_SEC))
     }
@@ -116,7 +118,7 @@ public extension DispatchData {
         enumerateBytes() {
             (buffer, offset, finish: inout Bool) in
 
-            let range = Range(offset..<(offset + buffer.count))
+            let range = offset..<(offset + buffer.count)
 
             do {
                 if try block(range, buffer) == false {
